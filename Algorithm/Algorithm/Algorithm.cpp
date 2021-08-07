@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <vector>
 #include <list>
+#include <stack>
 using namespace std;
 
 #pragma region Vector
@@ -290,31 +291,60 @@ private:
 };
 #pragma endregion
 
+#pragma region Stack
+//Stack (LIFO Last-In-First-Out 후입선출)
+
+template<typename T, typename Container = vector<int>>
+class Stack
+{
+public:
+    void push(const T& value)
+    {
+        _container.push_back(value);
+    }
+
+    void pop()
+    {
+        _container.pop_back();
+    }
+
+    T& top()
+    {
+        return _container.back();
+    }
+
+    bool empty() { return _container.empty(); }
+    int size() { return _container.size(); }
+
+private:
+    Container _container;
+
+};
+
+#pragma endregion
+
 int main()
 {
-    List<int> li;
+    Stack<int> s;
 
-    List<int>::iterator eraseIt;
+    // 삽입
+    s.push(1);
+    s.push(2);
+    s.push(3);
 
-    for (int i = 0; i < 10; i++)
+    while (s.empty() == false)
     {
-        if (i == 5)
-        {
-            eraseIt = li.insert(li.end(), i);
-        }
-        else
-        {
-            li.push_back(i);
-        }
+        // 최상위 원소
+        int data = s.top();
+
+        //최상위 원소 삭제
+        s.pop();
+
+        cout << data << endl;
     }
 
-    li.pop_back();
 
-    li.erase(eraseIt);
-
-    for (auto it = li.begin(); it != li.end(); it++)
-    {
-        cout << (*it) << endl;
-    }
+    int size = s.size();
+    
 }
 
