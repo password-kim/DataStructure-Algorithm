@@ -19,7 +19,7 @@ int main()
 	{
 #pragma region 프레임 관리
 		const uint64 currentTick = ::GetTickCount64();
-		const uint64 deltaTick = currentTick - lastTick;
+		const uint64 deltaTick = (currentTick - lastTick) / 5;
 		lastTick = currentTick;
 #pragma endregion
 
