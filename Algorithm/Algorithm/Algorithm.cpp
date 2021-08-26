@@ -5,100 +5,45 @@
 #include <queue>
 using namespace std;
 
-template<typename T, typename Container = vector<T>, typename Predicate = less<T>>
-class PriorityQueue
+// 이진 탐색(Binary Search)
+// => 정렬된 배열을 이용해서 이진 탐색 가능
+// => 연결 리스트로는 불가(연결 리스트는 임의 접근 불가)
+
+vector<int> numbers;
+
+void BinarySearch(int N)
 {
-public:
-	void push(const T& data)
+	int left = 0;
+	int right = (int)numbers.size() - 1;
+
+	while (left <= right)
 	{
-		// 우선 힙 구조부터 맞춰준다.
-		_heap.push_back(data);
+		cout << "탐색 범위: " << left << " ~ " << right << endl;
 
-		// 대소비교
-		int now = static_cast<int>(_heap.size()) - 1;
+		int mid = (left + right) / 2;
 
-		// 루트 노드까지 비교
-		while (now > 0)
+		if (N < numbers[mid])
 		{
-			// 부모 노드와 비교해서 더 작으면 break!
-			int next = (now - 1) / 2;
-			
-			if (_predicate(_heap[now], _heap[next]))
-				break;
-
-			// 데이터 교체
-			::swap(_heap[now], _heap[next]);
-			now = next;
+			cout << N << " < " << numbers[mid] << endl;
+			right = mid - 1;
+		}
+		else if (N > numbers[mid])
+		{
+			cout << N << " > " << numbers[mid] << endl;
+			left = mid + 1;
+		}
+		else
+		{
+			cout << "찾음!" << endl;
+			break;
 		}
 	}
-
-	void pop()
-	{
-		// 최상위 노드를 pop
-		_heap[0] = _heap.back();
-		_heap.pop_back();
-
-		int now = 0;
-
-		while (true)
-		{
-			int left = 2 * now + 1;
-			int right = 2 * now + 2;
-
-			// 리프에 도달한 경우
-			if (left >= (int)_heap.size())
-				break;
-
-			int next = now;
-
-			// 왼쪽과 비교
-			if (_predicate(_heap[next], _heap[left]))
-				next = left;
-
-			// 둘 중 높은수를 오른쪽과 비교
-			if (right < (int)_heap.size() && _predicate(_heap[next], _heap[right]))
-				next = right;
-
-			// 왼쪽/오른쪽 둘 다 현재 값보다 작으면 종료
-			if (next == now)
-				break;
-
-			::swap(_heap[now], _heap[next]);
-			now = next;
-		}
-	}
-
-	T& top()
-	{
-		return _heap[0];
-	}
-
-	bool empty()
-	{
-		return _heap.empty();
-	}
-
-private:
-	Container _heap = {};
-	Predicate _predicate = {};
-};
+}
 
 int main()
 {
-	PriorityQueue<int, vector<int>, greater<int>> pq;
-
-	pq.push(100);
-	pq.push(300);
-	pq.push(200);
-	pq.push(500);
-	pq.push(400);
-
-	while (pq.empty() == false)
-	{
-		int value = pq.top();
-		pq.pop();
-
-		cout << value << endl;
-	}
+	numbers = vector<int>{ 1, 8, 15, 23, 32, 44, 56, 63, 81, 91 };
+	
+	BinarySearch(81);
 }
 
