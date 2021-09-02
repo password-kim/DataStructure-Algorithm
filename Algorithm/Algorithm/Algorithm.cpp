@@ -6,87 +6,104 @@
 #include <thread>
 using namespace std;
 
-// 정렬
-
-// 1) 버블 정렬 (Bubble Sort)
-void BubbleSort(vector<int>& v)
+// 힙 정렬
+void HeapSort(vector<int>& v)
 {
-	const int n = (int)v.size();
+	priority_queue<int, vector<int>, greater<int>> pq;
 
-	// (N - 1) + (N - 2) + ... + 2 + 1
-	// => N * (N - 1) / 2
-	// => O(N^2)
-	for (int i = 0; i < n - 1; i++)
+	// O(NlogN)
+	for (int num : v)
+		pq.push(num);
+
+	v.clear();
+
+	// O(NlogN)
+	while (pq.empty() == false)
 	{
-		for (int j = 0; j < (n - 1 - i); j++)
-		{
-			if (v[j] > v[j + 1])
-			{
-				//swap(v[j], v[j + 1]);
-				int temp = v[j];
-				v[j] = v[j + 1];
-				v[j + 1] = temp; 
-			}
-		}
+		v.push_back(pq.top());
+		pq.pop();
 	}
 }
 
-// 2) 선택 정렬 (Selection Sort)
-void SelectionSort(vector<int>& v)
+// 병합 정렬
+// 분할 정복 (Divide and Conquer)
+// - 분할 (Divide)		문제를 분할하여 정리
+// - 정복 (Conquer)		분할된 문제를 해결
+// - 결합 (Combine)		결과를 취합하여 마무리
+void MergeResult(vector<int>& v, int left, int mid, int right)
 {
-	const int n = (int)v.size();
+	int leftIdx = left;
+	int rightIdx = mid + 1;
 
-	// => O(N^2)
-	for (int i = 0; i < n - 1; i++)
+	vector<int> temp;
+
+	while (leftIdx <= mid && rightIdx <= right)
 	{
-		int bestIdx = i;
-
-		for (int j = i + 1; j < n; j++)
+		if (v[leftIdx] <= v[rightIdx])
 		{
-			if (v[j] < v[bestIdx])
-				bestIdx = j; 
+			temp.push_back(v[leftIdx]);
+			leftIdx++;
 		}
+		else
+		{
+			temp.push_back(v[rightIdx]);
+			rightIdx++;
+		}
+	}
 
-		// swap
-		int temp = v[i];
-		v[i] = v[bestIdx];
-		v[bestIdx] = temp;
 
+	// 왼쪽이 먼저 끝났으면, 오른쪽 나머지 데이터 복사
+	if (leftIdx > mid)
+	{
+		while (rightIdx <= right)
+		{
+			temp.push_back(v[rightIdx]);
+			rightIdx++;
+		}
+	}
+	// 오른쪽이 먼저 끝났으면, 왼쪽 나머지 데이터 복사
+	else
+	{
+		while (leftIdx <= mid)
+		{
+			temp.push_back(v[leftIdx]);
+			leftIdx++;
+		}
+		
+	}
+
+	for (int i = 0; i < temp.size(); i++)
+	{
+		v[left + i] = temp[i];
 	}
 }
 
-// 3) 삽입 정렬 (Insertion Sort)
-void InsertionSort(vector<int>& v)
+void MergeSort(vector<int>& v, int left, int right)
 {
-	const int n = (int)v.size();
+	if (left >= right)
+		return;
 
-	// => O(N^2)
-	for (int i = 1; i < n; i++)
-	{
-		int insertData = v[i];
+	int mid = (left + right) / 2;
 
-		int j;
+	MergeSort(v, left, mid);
+	MergeSort(v, mid + 1, right);
 
-		for (j = i - 1; j >= 0; j--)
-		{
-			if (v[j] > insertData)
-				v[j + 1] = v[j];
-			else
-				break;
-		}
-
-		v[j + 1] = insertData;
-	}
+	MergeResult(v, left, mid, right);
 }
 
 int main()
 {
-	vector<int> v = { 2, 4, 5, 1, 3 };
+	vector<int> v;
 
-	//BubbleSort(v);
-	//SelectionSort(v);
-	InsertionSort(v);
+	srand(time(0));
 
+	for (int i = 0; i < 50; i++)
+	{
+		int randValue = rand() % 100;
+		v.push_back(randValue);
+	}
 
+	//HeapSort(v);
+	MergeSort(v, 0, v.size() - 1);
 }
 
