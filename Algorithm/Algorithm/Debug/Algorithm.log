@@ -1,0 +1,4 @@
+﻿  Algorithm.cpp
+C:\PasswordKim\Algorithm\Algorithm\Algorithm.cpp(44,32): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\PasswordKim\Algorithm\Algorithm\Algorithm.cpp(58,24): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+  Algorithm.vcxproj -> C:\PasswordKim\Algorithm\Debug\Algorithm.exe
