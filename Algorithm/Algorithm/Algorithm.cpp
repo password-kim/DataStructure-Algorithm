@@ -9,53 +9,83 @@ using namespace std;
 
 // 동적 계획법 (DP)
 
-// LIS (Longest Increasing Sequence)
+// TRIANGLE_PATH
+// - (0,0)부터 시작해서 아래 or 아래우측으로 이동 가능
+// - 만나는 숫자를 모두 더함
+// - 더한 숫자가 최대가 되는 경로? 합?
 
-// Seq : 1 9 2 5 7
-// 부분 수열 : 일부(0개 이상) 숫자를 지우고 남은 수열
-// ex) 1 2 5 <= 순 증가 부분 수열
-// ex) 1 9 5 7 <= 순 증가x 부분 수열
+// 6
+// 1 2
+// 3 7 4
+// 9 4 1 7
+// 2 7 5 9 4
 
-// LIS : 제일 긴 "순 증가 부분 수열"의 길이
-// 1 2 5 7 => 길이: 4
+int N;
+vector<vector<int>> board;
+vector<vector<int>> cache;
+vector<vector<int>> nextX;
 
-int cache[100];
-vector<int> seq;
 
-int LIS(int pos)
+int path(int y, int x)
 {
-	// - 기저 사항 => 있을수도 있고 없을수도 있다.
+	// 기저 사항
+	//if (y == N - 1)
+	//	return board[y][x];
+	if (y == N)
+		return 0;
 
-	// - 캐시 확인
-	int& ret = cache[pos];
+
+	// 캐시 확인
+	int& ret = cache[y][x];
 	if (ret != -1)
 		return ret;
 
-	// - 계획
-	// seq : 1 9 2 5 7
-	// 최소 seq[pos]는 있으니 1부터 시작
-	ret = 1;
-	// 1 9 => 길이: 2 => LIS(0) -> 1 + LIS(1)
-	// 1 2 5 7 =>길이: 4 => LIS(0) -> 1 + LIS(2) -> 
-	// 1 5 7 => 길이: 3
-	// 1 7 => 길이: 2
+	// 경로 기록
+	{
+		int nextBottom = path(y + 1, x);
+		int nextBottomRight = path(y + 1, x + 1);
+		if (nextBottom > nextBottomRight)
+			nextX[y][x] = x;
+		else
+			nextX[y][x] = x + 1;
+	}
 
-	// - 구하기
-	for (int next = pos + 1; next < seq.size(); next++)
-		if (seq[pos] < seq[next])
-			ret = max(ret, 1 + LIS(next));
 
-	return ret;
+	// 해결
+	return ret = board[y][x] + max(path(y + 1, x), path(y + 1, x + 1));
+
 }
+
 
 int main()
 {
-	::memset(cache, -1, sizeof(cache));
-	seq = vector<int>{ 9, 1, 2, 5, 7 };
+	board = vector<vector<int>>
+	{
+		{6},
+		{1, 2},
+		{3, 7, 4},
+		{9, 4, 1, 7},
+		{2, 7, 5, 9, 4}
+	};
 
-	int ret = 0;
-	// 무조건 seq[0]이 가장 작은 수라는 보장이 없으니 순회하여 구한다.
-	for (int pos = 0; pos < seq.size(); pos++)
-		ret = max(ret, LIS(pos));
+	N = board.size();
+	cache = vector<vector<int>>(N, vector<int>(N, -1));
+	nextX = vector<vector<int>>(N, vector<int>(N));
+
+	int ret = path(0, 0);
+	cout << ret << endl;
+
+	// 경로 만들기
+	int y = 0;
+	int x = 0;
+
+	while (y < N)
+	{
+		cout << board[y][x] << " -> ";
+
+		x = nextX[y][x];
+		y++;
+	}
+
 }
 
