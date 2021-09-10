@@ -9,134 +9,50 @@ using namespace std;
 
 // 동적 계획법 (DP)
 
-// TIC-TAE-TOE
+// ENCHANT 
+// +0 장검
+// 무기 강화 주문서 => +1 / +2 / +3 중 하나
 
-// [o][x][.]
-// [.][o][x]
-// [.][.][o]
+// +9 장검 뜨는 경우의 수는?
+// ex) +1 +2 +3 +4 ... +9
+// ex) +3 +6 +9
+// ex) +1 +3 +4 
 
-// 0 ~ 3 ^ 9 = 19683
-int HashKey(const vector<vector<char>>& board)
-{
-	int ret = 0;
+int N;
+int cache[100];
 
-	for (int y = 0; y < 3; y++)
-	{
-		for (int x = 0; x < 3; x++)
-		{
-			ret = ret * 3;
-
-			if (board[y][x] == 'o')
-				ret += 1;
-			else if (board[y][x] == 'x')
-				ret += 2;
-		}
-	}
-
-	return ret;
-}
-
-vector<vector<char>> board;
-int cache[19683];
-
-bool IsFinished(const vector<vector<char>>& board, char turn)
-{
-	// 가로
-	for (int i = 0; i < 3; i++)
-		if (board[i][0] == turn && board[i][1] == turn && board[i][2] == turn)
-			return true;
-
-	// 세로
-	for (int i = 0; i < 3; i++)
-		if (board[0][i] == turn && board[1][i] == turn && board[2][i] == turn)
-			return true;
-
-	// 대각선
-	if (board[0][0] == turn && board[1][1] == turn && board[2][2] == turn)
-		return true;
-	if (board[0][2] == turn && board[1][1] == turn && board[2][0] == turn)
-		return true;
-
-	return false;
-}
-
-enum
-{
-	DEFAULT = 2,
-	WIN = 1,
-	DRAW = 0,
-	LOSE = -1
-};
-
-int CanWin(vector<vector<char>>& board, char turn)
+// [+num]에서 시작해서, [+N]까지 가는 경우의 수
+int Enchant(int num)
 {
 	// 기저 사례
-	if (IsFinished(board, 'o' + 'x' - turn))
-		return LOSE;
+	if (num > N)
+		return 0;
+	if (num == N)
+		return 1;
 
-	// 캐시 확인
-	int key = HashKey(board);
-	int& ret = cache[key];
-	if (ret != DEFAULT)
+	// 캐시
+	int& ret = cache[num];
+	if (ret != -1)
 		return ret;
 
-	// 풀기
-
-	// [.][x][.]
-	// [.][o][.]
-	// [.][.][.]
-	int minValue = DEFAULT;
-
-	for (int y = 0; y < 3; y++)
-	{
-		for (int x = 0; x < 3; x++)
-		{
-			if (board[y][x] != '.')
-				continue;
-
-			// 착수
-			board[y][x] = turn;
-
-			// 확인
-			minValue = min(minValue, CanWin(board, 'o' + 'x' - turn)); // 상대방이 패배하는게 제일 좋은 케이스
-
-			// 취소
-			board[y][x] = '.';
-		}
-	}
-
-	if (minValue == DRAW || minValue == DEFAULT)
-		return ret = DRAW;
-
-	return ret = -minValue;
+	// 적용
+	return ret = Enchant(num + 1) + Enchant(num + 2) + Enchant(num + 3);
 }
 
 int main()
 {
-	board = vector<vector<char>>
-	{
-		{'o', '.', 'x'},
-		{'.', 'o', 'x'},
-		{'.', '.', '.'}
-	};
+	N = 4;
+	// +1 +2 +3 +4
+	// +1 +2 +4
+	// +1 +3 +4
+	// +1 +4
+	// +2 +3 +4
+	// +2 +4
+	// +3 +4
 
-	for (int i = 0; i < 19683; i++)
-		cache[i] = DEFAULT;
+	memset(cache, -1, sizeof(cache));
 
-	int win = CanWin(board, 'x');
-
-	switch (win)
-	{
-	case WIN:
-		cout << "Win" << endl;
-		break;
-	case DRAW:
-		cout << "Draw" << endl;
-		break;
-	case LOSE:
-		cout << "Lose" << endl;
-		break;
-	}
-
+	int ret = Enchant(0);
+	cout << ret << endl;
 }
 
